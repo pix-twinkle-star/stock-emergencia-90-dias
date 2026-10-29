@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#145b42" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#10271e" media="(prefers-color-scheme: dark)">
+<meta name="description" content="Tu checklist de reserva para 90 días, sin TACC. Cantidades por persona, compras y progreso guardados en tu navegador.">
+<title>Stock de emergencia · 90 días</title>
+<style>
+:root{color-scheme:light dark;--bg:#f3f7f3;--surface:#fff;--ink:#193b2d;--muted:#596d60;--line:#dae5dc;--green:#176b48;--green-soft:#e4f3e9;--checked:#edf8ef;--orange:#8c4300;--orange-bg:#fff0dc;--shadow:0 5px 20px #193b2d06;--focus:#1068c4}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+button{font:inherit;touch-action:manipulation;cursor:pointer;color:inherit}
+button:disabled{opacity:.38;cursor:default}
+button:focus-visible,[role=checkbox]:focus-visible,a:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+[hidden]{display:none!important}
+.wrap{width:min(100%,560px);margin-inline:auto;padding-inline:18px}
+header{position:sticky;top:0;z-index:10;background:var(--surface);border-bottom:1px solid var(--line);padding-top:max(18px,env(safe-area-inset-top));box-shadow:var(--shadow)}
+.eyebrow{margin:0 0 4px;color:var(--green);font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+h1{font-size:20px;line-height:1.2;letter-spacing:-.045em;margin:0;font-weight:800;text-wrap:balance}
+.subtitle{font-size:12px;color:var(--muted);margin:7px 0 14px;line-height:1.5}
+.people-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.people-title{font-size:13px;font-weight:700}.people-hint{display:block;font-size:11px;color:var(--muted);font-weight:400}
+.stepper{display:flex;align-items:center;background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:3px;flex:none}
+.stepper button{width:40px;height:40px;border:0;border-radius:12px;background:var(--surface);color:var(--green);font-size:25px;line-height:1}
+#people{min-width:94px;text-align:center;font-size:13px;font-weight:750;font-variant-numeric:tabular-nums}
+.progress-row{display:flex;align-items:center;justify-content:space-between;font-size:12px;margin-top:14px;margin-bottom:6px}
+#progress-text{font-weight:700}#percent{color:var(--muted);font-variant-numeric:tabular-nums}
+.track{height:7px;border-radius:10px;background:var(--line);overflow:hidden}.fill{height:100%;width:0;background:var(--green);border-radius:10px;transition:width .18s ease}
+.filters{display:flex;gap:5px;padding:4px;background:var(--bg);border-radius:14px;margin:13px 0 12px}
+.filters button{flex:1;min-height:40px;padding:6px 4px;font-size:13px;font-weight:700;border:0;border-radius:10px;background:transparent;color:var(--muted)}
+.filters button[aria-pressed=true]{background:var(--green);color:#fff}
+main{padding-top:16px;padding-bottom:24px}
+.safety{border:1px solid var(--line);border-radius:16px;background:var(--green-soft);padding:12px 14px;font-size:12px;color:var(--ink);margin-bottom:22px}
+.safety p{margin:0}.safety p+p{margin-top:6px}.safety strong{font-weight:750}
+.category{margin:0 0 26px;scroll-margin-top:300px}
+.category-heading{display:flex;align-items:baseline;justify-content:space-between;gap:10px}h2{font-size:19px;letter-spacing:-.03em;margin:0;font-weight:800}
+.category-count{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.category-subtitle{font-size:12px;color:var(--muted);margin:3px 0 12px}
+.cards{display:grid;gap:10px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px 13px;display:grid;grid-template-columns:24px minmax(0,1fr) auto;column-gap:11px;row-gap:7px;box-shadow:var(--shadow);cursor:pointer;touch-action:manipulation;scroll-margin-block:300px 24px}
+.check{width:24px;height:24px;border:1.7px solid #8aa291;border-radius:8px;display:grid;place-items:center;grid-row:1 / 4;margin-top:2px}
+.check svg{width:17px;height:17px;visibility:hidden}
+.name{font-size:14px;font-weight:700;line-height:1.4;min-width:0;overflow-wrap:anywhere}
+.amount{text-align:right;font-size:15px;font-weight:800;line-height:1.35;white-space:nowrap;font-variant-numeric:tabular-nums}
+.amount small{display:block;font-size:10px;font-weight:500;color:var(--muted);margin-top:2px}
+.life{grid-column:2 / 4;justify-self:start;max-width:100%;border-radius:7px;padding:3px 7px;background:var(--bg);font-size:10px;font-weight:650;color:var(--muted)}
+.life.short{color:var(--orange);background:var(--orange-bg)}
+.note{grid-column:2 / 4;font-size:11px;color:var(--muted);line-height:1.55;margin:0}
+.card[aria-checked=true]{background:var(--checked);border-color:#97caa7}.card[aria-checked=true] .name{text-decoration:line-through;text-decoration-thickness:1px;color:var(--muted)}
+.card[aria-checked=true] .check{background:var(--green);border-color:var(--green);color:#fff}.card[aria-checked=true] .check svg{visibility:visible}
+#empty{border:1px dashed var(--line);background:var(--surface);border-radius:20px;padding:38px 18px;text-align:center;font-weight:700;font-size:16px;margin:8px 0 24px}
+footer{border-top:1px solid var(--line);padding:20px 0 max(28px,env(safe-area-inset-bottom));color:var(--muted);font-size:11px}footer p{margin:0 0 14px}
+#reset{display:block;width:100%;min-height:48px;background:var(--surface);border:1px solid var(--line);border-radius:14px;font-size:13px;font-weight:700;margin:20px 0 12px}
+#reset[data-armed=true]{color:var(--orange);border-color:var(--orange);background:var(--orange-bg)}
+.storage-note{font-size:10px;text-align:center}#storage-warning{color:var(--orange)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+@media(min-width:430px){h1{font-size:23px}.wrap{padding-inline:24px}.subtitle{font-size:13px}.card{padding:18px 15px}.name{font-size:15px}}
+@media(prefers-color-scheme:dark){:root{--bg:#101c16;--surface:#192a21;--ink:#e2efe4;--muted:#abc0af;--line:#33483a;--green:#8ed9aa;--green-soft:#1c3225;--checked:#203c2a;--orange:#ffd19a;--orange-bg:#4a321c;--shadow:none;--focus:#8dc9ff}.filters button[aria-pressed=true]{background:#276b47;color:#f1fff4}.card[aria-checked=true]{border-color:#4d8b62}.card[aria-checked=true] .check{background:#337b50;border-color:#8ed9aa}}
+@media(prefers-reduced-motion:reduce){.fill{transition:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <p class="eyebrow">Tu reserva, paso a paso</p>
+    <h1>Stock de emergencia · 90 días</h1>
+    <p class="subtitle">Todo sin TACC · tocá un producto para tildarlo</p>
+    <div class="people-row">
+      <div class="people-title">¿Para cuántos?<span class="people-hint">Totales para tu reserva</span></div>
+      <div class="stepper" role="group" aria-label="Cantidad de personas">
+        <button type="button" id="minus" aria-label="Quitar una persona" disabled>−</button>
+        <output id="people" aria-live="polite">1 persona</output>
+        <button type="button" id="plus" aria-label="Agregar una persona">+</button>
+      </div>
+    </div>
+    <div class="progress-row"><span id="progress-text" aria-live="polite">0 de 27 comprados</span><span id="percent" aria-hidden="true">0%</span></div>
+    <div id="progress" class="track" role="progressbar" aria-label="Productos comprados" aria-valuemin="0" aria-valuemax="27" aria-valuenow="0"><div class="fill" id="fill"></div></div>
+    <nav class="filters" aria-label="Filtrar productos">
+      <button type="button" data-filter="missing" aria-pressed="true">Falta</button>
+      <button type="button" data-filter="all" aria-pressed="false">Todo</button>
+      <button type="button" data-filter="bought" aria-pressed="false">Comprado</button>
+    </nav>
+  </div>
+</header>
+<main class="wrap" id="main">
+  <aside class="safety" aria-label="Antes de comprar">
+    <p><strong>Sin TACC, de verdad.</strong> Elegí alimentos y suplementos certificados sin TACC. Evitá la contaminación cruzada al guardar y preparar.</p>
+    <p>Las cantidades y calorías son orientativas: no constituyen un menú nutricional validado.</p>
+  </aside>
+  <div id="categories"></div>
+  <p id="empty" role="status" hidden></p>
+  <noscript><p>Activá JavaScript en tu navegador para ver y usar la checklist.</p></noscript>
+  <footer>
+    <p id="calculation">Cálculo: ~2.000 kcal y ~4 L de agua por persona por día. La vida útil es aproximada y para el producto cerrado: siempre mirá la fecha del envase. Lo marcado en naranja es lo que menos dura. Usá primero lo más viejo y reponelo.</p>
+    <button type="button" id="reset">Destildar todo</button>
+    <p class="storage-note">Abrilo en tu navegador. El progreso se guarda en este dispositivo si el navegador lo permite.</p>
+    <p id="storage-warning" role="status" hidden>No se pudo guardar en este navegador. Podés usar la lista, pero los cambios podrían perderse al cerrar.</p>
+    <span id="action-status" class="sr-only" role="status"></span>
+  </footer>
+</main>
+<script>
+'use strict';
+(() => {
+const groups = [
+ ['Base', 'La energía de todos los días'],
+ ['Proteína', 'Para sumar variedad y sostén'],
+ ['Vegetales y fruta', 'Conservas para completar la reserva'],
+ ['Extras', 'Sabor y básicos de la rutina'],
+ ['Agua', 'Reserva para beber y cocinar'],
+ ['No comida', 'Lo esencial, además de los alimentos']
+];
+const products = [
+ ['Base','Arroz blanco',12,'kg','1–2 años','El integral dura menos'],
+ ['Base','Fideos secos sin TACC',5,'kg','1–2 años','Con logo sin TACC'],
+ ['Base','Polenta',4,'kg','~1 año','Con logo sin TACC'],
+ ['Base','Puré instantáneo sin TACC',1.5,'kg','~1 año',''],
+ ['Base','Aceite',5,'L','~1 año','Lejos de la luz y el calor'],
+ ['Proteína','Atún, caballa o sardinas en lata',45,'latas','2–4 años','Una día por medio'],
+ ['Proteína','Legumbres secas (garbanzos, lentejas, porotos)',6,'kg','1–2 años','Necesitan gas para cocinarse'],
+ ['Proteína','Leche en polvo',3,'kg','~1 año','La descremada dura más'],
+ ['Proteína','Maní, frutos secos o pasta de maní',2,'kg','6–12 meses','Se pone rancio','N'],
+ ['Vegetales y fruta','Conservas (tomate, choclo, arvejas, duraznos)',60,'latas','1–3 años','El tomate dura menos'],
+ ['Extras','Azúcar o miel',2,'kg','No vence',''],
+ ['Extras','Dulce de leche',1,'kg','6–12 meses','','N'],
+ ['Extras','Yerba',3.5,'kg','1–2 años',''],
+ ['Extras','Café o té',0.5,'kg','1–2 años',''],
+ ['Extras','Sal',1,'kg','No vence',''],
+ ['Extras','Caldos sin TACC',30,'unid.','1–2 años',''],
+ ['Extras','Multivitamínico',90,'comp.','1–2 años',''],
+ ['Agua','Agua envasada',360,'L','~1 año','60 bidones de 6 L por persona; ir rotando'],
+ ['Agua','Lavandina sin perfume',1,'L','6–12 meses','Para potabilizar, usá solo un producto apto según su rótulo. Seguí la dosis según concentración y el tiempo de espera indicados en el envase.','N'],
+ ['No comida','Garrafa o gas de reserva',1,'unid.','No vence','Por hogar','H'],
+ ['No comida','Abrelatas manual',1,'unid.','No vence','Por hogar','H'],
+ ['No comida','Linterna',1,'unid.','No vence',''],
+ ['No comida','Pilas alcalinas',8,'unid.','5–10 años',''],
+ ['No comida','Botiquín',1,'unid.','Ver cada producto','Por hogar','H'],
+ ['No comida','Medicamentos habituales',90,'días','Ver envase','Consultá con tu médico'],
+ ['No comida','Papel higiénico',15,'rollos','No vence',''],
+ ['No comida','Jabón',4,'unid.','Muy larga','']
+].map(([category,name,quantity,unit,life,note,flag],id) => ({id,category,name,quantity,unit,life,note,flag}));
+const format = new Intl.NumberFormat('es-AR', {maximumFractionDigits:1});
+const cards = [];
+const sections = [];
+for (const [category, subtitle] of groups) {
+ const section = document.createElement('section');
+ section.className = 'category';
+ section.innerHTML = `<div class="category-heading"><h2>${category}</h2><span class="category-count"></span></div><p class="category-subtitle">${subtitle}</p><div class="cards"></div>`;
+ const items = products.filter(p => p.category === category);
+ section.querySelector('.category-count').textContent = `${items.length} productos`;
+ for (const product of items) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.id = `product-${product.id}`;
+  card.dataset.id = product.id;
+  card.setAttribute('role', 'checkbox');
+  card.setAttribute('aria-checked', 'false');
+  card.tabIndex = 0;
+  card.setAttribute('aria-labelledby', `name-${product.id} amount-${product.id}`);
+  card.setAttribute('aria-describedby', `life-${product.id}${product.note ? ` note-${product.id}` : ''}`);
+  card.innerHTML = `<span class="check" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none"><path d="m4 10 4 4 8-8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="name" id="name-${product.id}"></span><span class="amount" id="amount-${product.id}"></span><span class="life${product.flag === 'N' ? ' short' : ''}" id="life-${product.id}"></span>${product.note ? `<p class="note" id="note-${product.id}"></p>` : ''}`;
+  card.querySelector('.name').textContent = product.name;
+  card.querySelector('.amount').append(`${format.format(product.quantity)} ${product.unit}`);
+  const label = document.createElement('small');
+  label.textContent = product.flag === 'H' ? 'por hogar' : 'total';
+  card.querySelector('.amount').append(label);
+  card.querySelector('.life').textContent = `Dura: ${product.life}`;
+  if (product.note) card.querySelector('.note').textContent = product.note;
+  section.querySelector('.cards').append(card);
+  cards.push({element:card, product});
+ }
+ sections.push(section);
+ document.getElementById('categories').append(section);
+}
+let people = 1;
+const checked = new Set();
+const storageKey = 'stock-emergencia-90-dias:v1';
+function storageWarning() {
+ document.getElementById('storage-warning').hidden = false;
+}
+try {
+ const raw = localStorage.getItem(storageKey);
+ const saved = raw ? JSON.parse(raw) : null;
+ if (saved && typeof saved === 'object' && !Array.isArray(saved) && saved.version === 1) {
+  if (Number.isInteger(saved.people) && saved.people >= 1 && saved.people <= 20) people = saved.people;
+  if (Array.isArray(saved.checked)) {
+   for (const id of saved.checked) {
+    if (Number.isInteger(id) && id >= 0 && id < products.length) checked.add(id);
+   }
+  }
+ }
+} catch { storageWarning(); }
+function save() {
+ try {
+  localStorage.setItem(storageKey, JSON.stringify({version:1, people, checked:[...checked]}));
+ } catch { storageWarning(); }
+}
+let filter = 'missing';
+const filterButtons = [...document.querySelectorAll('[data-filter]')];
+function renderChecks() {
+ for (const {element, product} of cards) {
+  const bought = checked.has(product.id);
+  element.setAttribute('aria-checked', String(bought));
+  element.hidden = filter === 'missing' ? bought : filter === 'bought' ? !bought : false;
+ }
+ for (const section of sections) {
+  const visible = [...section.querySelectorAll('.card')].filter(card => !card.hidden).length;
+  section.hidden = visible === 0;
+  section.querySelector('.category-count').textContent = `${visible} ${visible === 1 ? 'producto' : 'productos'}`;
+ }
+ for (const button of filterButtons) button.setAttribute('aria-pressed', String(button.dataset.filter === filter));
+ const count = checked.size;
+ document.getElementById('progress-text').textContent = `${count} de ${products.length} comprados`;
+ document.getElementById('progress').setAttribute('aria-valuenow', String(count));
+ const percent = Math.round(count / products.length * 100);
+ document.getElementById('percent').textContent = `${percent}%`;
+ document.getElementById('fill').style.width = `${count / products.length * 100}%`;
+ const empty = document.getElementById('empty');
+ empty.hidden = cards.some(({element}) => !element.hidden);
+ empty.textContent = filter === 'missing' ? '¡Ya compraste todo! 🎉' : 'Todavía no tildaste nada.';
+}
+function toggle(element, product) {
+ const hadFocus = document.activeElement === element;
+ const index = cards.findIndex(card => card.element === element);
+ checked.has(product.id) ? checked.delete(product.id) : checked.add(product.id);
+ save();
+ renderChecks();
+ if (hadFocus && element.hidden) {
+  const next = cards.slice(index + 1).find(card => !card.element.hidden)
+    || cards.slice(0, index).reverse().find(card => !card.element.hidden);
+  (next ? next.element : filterButtons.find(button => button.dataset.filter === filter)).focus({preventScroll:true});
+ }
+}
+for (const {element, product} of cards) {
+ element.addEventListener('click', () => toggle(element, product));
+ element.addEventListener('keydown', event => {
+  if (event.key === 'Enter' || event.key === ' ') {
+   event.preventDefault();
+   if (!event.repeat) toggle(element, product);
+  }
+ });
+}
+for (const button of filterButtons) button.addEventListener('click', () => {
+ filter = button.dataset.filter;
+ renderChecks();
+});
+renderChecks();
+function renderPeople() {
+ document.getElementById('people').textContent = `${people} ${people === 1 ? 'persona' : 'personas'}`;
+ document.getElementById('minus').disabled = people === 1;
+ document.getElementById('plus').disabled = people === 20;
+ for (const {element, product} of cards) {
+  element.querySelector('.amount').firstChild.textContent = `${format.format(product.quantity * (product.flag === 'H' ? 1 : people))} ${product.unit}`;
+ }
+}
+for (const [id, step] of [['minus', -1], ['plus', 1]]) {
+ document.getElementById(id).addEventListener('click', () => {
+  people = Math.min(20, Math.max(1, people + step));
+  save();
+  renderPeople();
+ });
+}
+renderPeople();
+const reset = document.getElementById('reset');
+let resetTimer;
+let resetDeadline = 0;
+function disarmReset() {
+ clearTimeout(resetTimer);
+ resetDeadline = 0;
+ reset.textContent = 'Destildar todo';
+ reset.dataset.armed = 'false';
+}
+reset.addEventListener('click', () => {
+ if (resetDeadline && performance.now() < resetDeadline) {
+  checked.clear();
+  save();
+  renderChecks();
+  disarmReset();
+  document.getElementById('action-status').textContent = 'Se destildaron todos los productos.';
+ } else {
+  disarmReset();
+  resetDeadline = performance.now() + 3000;
+  reset.textContent = 'Tocá de nuevo para confirmar';
+  reset.dataset.armed = 'true';
+  document.getElementById('action-status').textContent = 'Tocá de nuevo para confirmar. Tenés 3 segundos.';
+  resetTimer = setTimeout(disarmReset, 3000);
+ }
+});
+})();
+</script>
+</body>
+</html>
